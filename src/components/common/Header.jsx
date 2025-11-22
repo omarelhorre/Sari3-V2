@@ -19,9 +19,8 @@ export default function Header() {
             </div>
             <div>
               <span className="text-2xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-                Saniat Rmel Hospital
+                saari3
               </span>
-              <p className="text-xs text-text/70">Patient Portal</p>
             </div>
           </Link>
 

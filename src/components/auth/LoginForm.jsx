@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import LoadingSpinner from '../common/LoadingSpinner'
 
@@ -10,6 +10,8 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const { signIn } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/dashboard'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -25,7 +27,7 @@ export default function LoginForm() {
     }
 
     if (data?.user) {
-      navigate('/dashboard')
+      navigate(redirectTo)
     }
   }
 

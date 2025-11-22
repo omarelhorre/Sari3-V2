@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabaseClient'
 import { useAuth } from '../../hooks/useAuth'
 import LoadingSpinner from './LoadingSpinner'
@@ -9,8 +10,48 @@ export default function JoinQueueModal({ isOpen, onClose, department }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const { user } = useAuth()
+  const navigate = useNavigate()
 
   if (!isOpen) return null
+
+  // Check authentication before allowing queue join
+  if (!user) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-secondary">Authentication Required</h2>
+            <button
+              onClick={onClose}
+              className="text-text hover:text-primary text-2xl"
+            >
+              ×
+            </button>
+          </div>
+          <p className="text-text mb-6">
+            You need to be logged in to join a waiting list. Please sign in to continue.
+          </p>
+          <div className="flex space-x-3">
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-3 border border-gray-300 text-text rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                navigate('/login')
+                onClose()
+              }}
+              className="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-accent transition-colors"
+            >
+              Go to Login
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()

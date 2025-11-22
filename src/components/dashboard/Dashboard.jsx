@@ -2,6 +2,7 @@ import { useState } from 'react'
 import WaitingListTab from './WaitingListTab'
 import BloodBankTab from './BloodBankTab'
 import DoctorsTab from './DoctorsTab'
+import ReviewsTab from './ReviewsTab'
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('waiting')
@@ -10,6 +11,7 @@ export default function Dashboard() {
     { id: 'waiting', label: 'Waiting Lists', icon: '⏱️' },
     { id: 'blood', label: 'Blood Bank', icon: '🩸' },
     { id: 'doctors', label: 'Doctors', icon: '👨‍⚕️' },
+    { id: 'reviews', label: 'Reviews', icon: '⭐' },
   ]
 
   return (
@@ -48,6 +50,7 @@ export default function Dashboard() {
           {activeTab === 'waiting' && <WaitingListTab />}
           {activeTab === 'blood' && <BloodBankTab />}
           {activeTab === 'doctors' && <DoctorsTab />}
+          {activeTab === 'reviews' && <ReviewsTab />}
         </div>
       </div>
     </div>
