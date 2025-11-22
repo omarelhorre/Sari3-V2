@@ -70,7 +70,12 @@ export default function JoinQueueModal({ isOpen, onClose, department }) {
         })
 
       if (insertError) {
-        setError(insertError.message)
+        // Provide more helpful error messages
+        if (insertError.message.includes('row-level security') || insertError.message.includes('RLS')) {
+          setError('Failed to join queue. Database permission error. Please check RLS policies.')
+        } else {
+          setError(insertError.message || 'Failed to join queue. Please try again.')
+        }
         setLoading(false)
         return
       }

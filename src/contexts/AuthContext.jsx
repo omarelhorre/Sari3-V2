@@ -112,7 +112,7 @@ export function AuthProvider({ children }) {
 
   const signIn = async (username, password) => {
     // Admin login: admin-saniat / admin123 → Saniat Rmel Hospital
-    if (username === 'admin-saniat' && password === 'admin123') {
+    if (username === 'admin1' && password === 'admin123') {
       const adminUser = {
         id: 'admin-saniat-rmel-id',
         email: 'admin@saniatrmel.hospital',
@@ -128,7 +128,7 @@ export function AuthProvider({ children }) {
     }
 
     // Admin login: admin-mohammed6 / admin123 → Mohammed 6 Hospital
-    if (username === 'admin-mohammed6' && password === 'admin123') {
+    if (username === 'admin2' && password === 'admin123') {
       const adminUser = {
         id: 'admin-mohammed6-id',
         email: 'admin@mohammed6.hospital',
