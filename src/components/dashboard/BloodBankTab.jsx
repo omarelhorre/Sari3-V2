@@ -85,7 +85,7 @@ export default function BloodBankTab() {
           return (
             <div
               key={item.id}
-              className={`border-2 rounded-xl p-6 text-center ${getStatusColor(status)}`}
+              className={`border-2 rounded-xl p-6 text-center bg-white/20 backdrop-blur-sm ${getStatusColor(status)}`}
             >
               <div className="text-4xl font-bold mb-2">{item.blood_type}</div>
               <div className="text-2xl font-semibold mb-2">{item.units}</div>

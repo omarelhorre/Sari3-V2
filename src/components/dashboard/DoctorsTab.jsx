@@ -117,7 +117,7 @@ export default function DoctorsTab() {
         {filteredDoctors.map((doctor) => (
           <div
             key={doctor.id}
-            className="border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all"
+            className="border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all bg-white/20 backdrop-blur-sm hover:bg-white/30"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">

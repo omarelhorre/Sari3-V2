@@ -229,7 +229,7 @@ export default function AdminWaitingList() {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-secondary mb-2">Confirm Deletion</h2>

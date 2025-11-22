@@ -11,6 +11,7 @@ export default function MapView() {
       coordinates: [35.5889, -5.3626],
       isMain: false,
       color: '#4CAF50', // Primary green
+      googleMapsLink: 'https://maps.app.goo.gl/UafjWqdfhsu7nZns8',
     },
     {
       id: 'mohammed-6',
@@ -20,6 +21,7 @@ export default function MapView() {
       coordinates: [35.5723, -5.3701],
       isMain: false,
       color: '#43A047', // Accent green
+      googleMapsLink: `https://www.google.com/maps?q=${35.5723},${-5.3701}`,
     },
     {
       id: 'ibn-sina',
@@ -29,6 +31,7 @@ export default function MapView() {
       coordinates: [35.5950, -5.3550],
       isMain: false,
       color: '#66BB6A', // Light green
+      googleMapsLink: `https://www.google.com/maps?q=${35.5950},${-5.3550}`,
     },
     {
       id: 'al-andalus',
@@ -38,6 +41,7 @@ export default function MapView() {
       coordinates: [35.5800, -5.3750],
       isMain: false,
       color: '#81C784', // Lighter green
+      googleMapsLink: `https://www.google.com/maps?q=${35.5800},${-5.3750}`,
     },
   ]
 
@@ -94,11 +98,23 @@ export default function MapView() {
                 </h2>
                 <p className="text-text mb-4">{selectedHospital.address}</p>
                 <p 
-                  className="font-semibold transition-colors duration-500"
+                  className="font-semibold transition-colors duration-500 mb-6"
                   style={{ color: particleColor }}
                 >
                   Coordinates: {Math.abs(selectedHospital.coordinates[0]).toFixed(4)}° {selectedHospital.coordinates[0] >= 0 ? 'N' : 'S'}, {Math.abs(selectedHospital.coordinates[1]).toFixed(4)}° {selectedHospital.coordinates[1] >= 0 ? 'E' : 'W'}
                 </p>
+                <a
+                  href={selectedHospital.googleMapsLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
+                  style={{
+                    background: `linear-gradient(135deg, ${particleColor}, ${particleColor}CC)`,
+                  }}
+                >
+                  <i className="fas fa-map-marked-alt"></i>
+                  Take me there
+                </a>
               </div>
             </div>
           </div>
@@ -211,7 +227,7 @@ export default function MapView() {
                       )}
                     </div>
                   </div>
-                  <div className={`space-y-2 ${
+                  <div className={`space-y-2 mb-4 ${
                     hospital.isMain ? 'text-white/90' : 'text-text'
                   }`}>
                     <div className="flex items-center gap-2">
@@ -237,6 +253,26 @@ export default function MapView() {
                       <span className="text-sm">{hospital.phone}</span>
                     </div>
                   </div>
+                  <a
+                    href={hospital.googleMapsLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105 active:scale-95 ${
+                      hospital.isMain 
+                        ? 'bg-white/20 text-white hover:bg-white/30' 
+                        : 'bg-primary/10 text-primary hover:bg-primary/20'
+                    }`}
+                    style={{
+                      background: isSelected && !hospital.isMain 
+                        ? `${hospital.color}20` 
+                        : undefined,
+                      color: isSelected && !hospital.isMain ? hospital.color : undefined,
+                    }}
+                  >
+                    <i className="fas fa-map-marked-alt"></i>
+                    Take me there
+                  </a>
                 </div>
                 
                 {/* Hover effect overlay */}

@@ -111,7 +111,7 @@ export default function WaitingListTab() {
           return (
             <div
               key={dept.id}
-              className={`border-2 rounded-xl p-6 hover:shadow-lg transition-all ${getStatusColor(
+              className={`border-2 rounded-xl p-6 hover:shadow-lg transition-all bg-white/20 backdrop-blur-sm ${getStatusColor(
                 status
               )}`}
             >

@@ -181,7 +181,7 @@ export default function ReviewsTab() {
           reviews.map((review) => (
             <div
               key={review.id}
-              className="bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-primary/10"
+              className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-primary/10 hover:bg-white/30 transition-all"
             >
               <div className="flex justify-between items-start mb-3">
                 <div>

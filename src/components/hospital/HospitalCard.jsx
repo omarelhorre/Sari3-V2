@@ -4,21 +4,27 @@ export default function HospitalCard({ hospital }) {
   return (
     <Link
       to={`/hospital/${hospital.id}`}
-      className="group block bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-primary/10 hover:shadow-2xl hover:scale-105 transition-all"
+      className="group block bg-gradient-to-br from-white/95 to-white/80 backdrop-blur-md rounded-3xl shadow-xl p-8 border border-primary/20 hover:shadow-2xl hover:scale-[1.02] hover:border-primary/40 transition-all duration-300 ease-out relative overflow-hidden"
     >
-      <div className="flex items-center justify-center mb-6">
-        <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-          <i className="fas fa-hospital text-white text-4xl"></i>
+      {/* Animated background gradient on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      
+      <div className="relative z-10">
+        <div className="flex items-center justify-center mb-6">
+          <div className="w-24 h-24 bg-gradient-to-br from-primary via-primary to-accent rounded-3xl flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+            <i className="fas fa-hospital text-white text-5xl"></i>
+          </div>
         </div>
-      </div>
-      <h3 className="text-2xl font-bold text-secondary mb-3 text-center group-hover:text-primary transition-colors">
-        {hospital.name}
-      </h3>
-      <p className="text-text text-center mb-4">{hospital.location}</p>
-      <div className="flex items-center justify-center">
-        <span className="px-4 py-2 bg-primary/10 text-primary rounded-lg font-semibold text-sm">
-          View Details →
-        </span>
+        <h3 className="text-2xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent mb-3 text-center group-hover:scale-105 transition-transform duration-300">
+          {hospital.name}
+        </h3>
+        <p className="text-text/80 text-center mb-6 font-medium">{hospital.location}</p>
+        <div className="flex items-center justify-center">
+          <span className="px-6 py-3 bg-gradient-to-r from-primary/15 to-accent/15 text-primary rounded-xl font-semibold text-sm border border-primary/20 group-hover:from-primary/25 group-hover:to-accent/25 group-hover:border-primary/40 transition-all duration-300 flex items-center gap-2">
+            View Details
+            <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+          </span>
+        </div>
       </div>
     </Link>
   )

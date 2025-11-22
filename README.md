@@ -1,30 +1,16 @@
-Reviewing the current README and project structure to draft an updated README:
-
-
-[4 tools called]
-
-
-Checking additional details:
-
-
-[3 tools called]
-
-
-Updated README:
-
-```markdown
 # Sarii Space (Sari3) - Hospital Patient Portal
 
-A modern, multi-hospital patient portal web application for hospitals in Tetouan, Morocco. Built with React, Vite, Tailwind CSS, and Supabase. This platform allows patients to manage appointments, view hospital information, submit reviews, and enables administrators to manage hospital operations.
+A modern, multi-hospital patient portal web application for hospitals in Tetouan, Morocco. Built with React, Vite, Tailwind CSS, and Supabase. This platform allows patients to manage appointments, view hospital information, submit reviews, request help, and enables administrators to manage hospital operations.
 
 ## 🌟 Features
 
 ### Patient Features
-- 🔐 **Authentication** - Secure login and signup system
+- 🔐 **Authentication** - Secure login and signup system (required for help requests)
 - ⏱️ **Real-time Waiting Lists** - Join department queues with live updates
 - 🩸 **Blood Bank Inventory** - View real-time blood type availability
 - 👨‍⚕️ **Doctor Directory** - Browse doctors, specializations, and availability status
-- ⭐ **Reviews System** - Submit and view hospital/doctor reviews with ratings
+- ⭐ **Reviews System** - Submit and view hospital/doctor reviews with ratings and optional doctor selection
+- 🆘 **Help Requests** - Request emergency help from hospital staff with description (login required)
 - 🗺️ **Hospital Locations** - Interactive map showing all hospital locations
 - 🏥 **Multi-Hospital Support** - Access different hospitals from a single platform
 
@@ -32,6 +18,7 @@ A modern, multi-hospital patient portal web application for hospitals in Tetouan
 - 📊 **Admin Dashboard** - Comprehensive management interface
 - 📋 **Waiting List Management** - View and delete patients from waiting lists
 - 🩸 **Blood Bank Management** - Update blood inventory in real-time
+- 🆘 **Help Requests Management** - View, manage, and resolve patient help requests with status tracking
 - 🔄 **Real-time Updates** - All changes sync instantly across the platform
 
 ### Additional Features
@@ -88,6 +75,8 @@ Run these SQL scripts in your Supabase SQL Editor in order:
 
 #### Step 1: Core Tables
 
+Run the SQL from `supabase_reviews_table.sql` and `supabase_help_requests_table.sql` files, or use the combined script below:
+
 ```sql
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -141,6 +130,18 @@ CREATE TABLE reviews (
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Create help_requests table
+CREATE TABLE help_requests (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  hospital_id TEXT NOT NULL,
+  patient_name TEXT NOT NULL,
+  description TEXT,
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'in-progress', 'resolved', 'cancelled')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  resolved_at TIMESTAMP WITH TIME ZONE
+);
 ```
 
 #### Step 2: Enable Row Level Security
@@ -152,6 +153,7 @@ ALTER TABLE doctors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blood_bank ENABLE ROW LEVEL SECURITY;
 ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE help_requests ENABLE ROW LEVEL SECURITY;
 ```
 
 #### Step 3: Create RLS Policies
@@ -175,6 +177,12 @@ CREATE POLICY "Users can view departments" ON departments FOR SELECT USING (true
 -- Review Policies
 CREATE POLICY "Anyone can view reviews" ON reviews FOR SELECT USING (true);
 CREATE POLICY "Anyone can insert reviews" ON reviews FOR INSERT WITH CHECK (true);
+
+-- Help Requests Policies
+CREATE POLICY "Anyone can view help requests" ON help_requests FOR SELECT USING (true);
+CREATE POLICY "Anyone can insert help requests" ON help_requests FOR INSERT WITH CHECK (true);
+CREATE POLICY "Anyone can update help requests" ON help_requests FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Anyone can delete help requests" ON help_requests FOR DELETE USING (true);
 ```
 
 #### Step 4: Seed Initial Data
@@ -215,6 +223,7 @@ INSERT INTO blood_bank (blood_type, units) VALUES
    - `waiting_list`
    - `blood_bank`
    - `reviews`
+   - `help_requests`
 
 ### 5. Run Development Server
 
@@ -246,6 +255,7 @@ src/
 │   ├── admin/
 │   │   ├── AdminBloodBankTab.jsx      # Blood bank management
 │   │   ├── AdminDashboard.jsx         # Main admin interface
+│   │   ├── AdminHelpRequestsTab.jsx   # Help requests management
 │   │   └── AdminWaitingList.jsx       # Waiting list management
 │   ├── auth/
 │   │   ├── LoginForm.jsx              # Login component
@@ -263,6 +273,7 @@ src/
 │   │   ├── DoctorsTab.jsx             # Doctor directory
 │   │   ├── ReviewForm.jsx             # Review submission form
 │   │   ├── ReviewsTab.jsx             # Reviews display
+│   │   ├── RequestHelpModal.jsx       # Help request modal
 │   │   └── WaitingListTab.jsx         # Waiting list display
 │   ├── hospital/
 │   │   ├── HospitalCard.jsx           # Hospital card component
@@ -305,15 +316,30 @@ Currently, the platform supports:
 - Real-time updates when new reviews are submitted
 - Reviews are filtered by hospital
 
+### Help Requests System
+- **Patient Side**: 
+  - Login required to request help
+  - Optional description field for detailed information
+  - Confirmation step before submitting
+  - Success message confirming help is on the way
+- **Admin Side**:
+  - View all help requests in dedicated tab
+  - Status management: pending → in-progress → resolved
+  - Delete functionality
+  - Real-time updates
+  - Filtered by hospital
+
 ### Admin Dashboard
 - **Waiting List Tab**: View all patients in waiting lists, delete entries with confirmation
 - **Blood Bank Tab**: Update blood inventory quantities in real-time
+- **Help Requests Tab**: Manage patient help requests with status tracking
 - All changes sync instantly with patient dashboards
 
 ### Real-time Features
 - Waiting list updates
 - Blood bank inventory changes
 - New review submissions
+- Help request status changes
 - All powered by Supabase real-time subscriptions
 
 ## 🚀 Deployment
@@ -354,21 +380,8 @@ MIT
 
 ## 🔄 Version
 
-**Version 2.0** - Multi-hospital support with reviews and admin management
+**Version 2.0** - Multi-hospital support with reviews, help requests, and comprehensive admin management
 
 ---
 
 **Copyright © 2025-2026**
-```
-
-This README includes:
-- Updated project name and description
-- All current features (reviews, admin dashboard, multi-hospital support)
-- Complete database setup instructions
-- Admin login credentials
-- Updated project structure
-- Real-time features documentation
-- Contributors and contact information
-- Deployment instructions
-
-Copy this into your README.md file.
