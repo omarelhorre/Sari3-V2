@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import Header from '../common/Header'
 import LoadingSpinner from '../common/LoadingSpinner'
 import Dashboard from '../dashboard/Dashboard'
 
@@ -56,7 +55,6 @@ export default function HospitalDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <div className="w-24 h-24 bg-gradient-to-br from-primary to-accent rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">

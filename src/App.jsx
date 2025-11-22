@@ -94,7 +94,7 @@ function Home() {
         {/* Thanks Section */}
         <div className="mb-12 py-12 px-4 rounded-3xl" style={{ backgroundColor: 'rgba(67, 160, 71, 0.1)' }}>
           <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent mb-8">
-            Thanks to
+            Special thanks to
           </h2>
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center border border-primary/10 max-w-3xl mx-auto">
             <div className="flex flex-col md:flex-row justify-center items-center gap-6">
