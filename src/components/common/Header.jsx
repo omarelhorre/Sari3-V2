@@ -24,6 +24,7 @@ export default function Header() {
             </div>
           </Link>
 
+<<<<<<< Updated upstream
           {user && (
             <nav className="hidden md:flex items-center space-x-1">
               <Link 
@@ -40,6 +41,26 @@ export default function Header() {
               </Link>
             </nav>
           )}
+=======
+          <nav className="hidden md:flex items-center space-x-1">
+            {user && (
+              <>
+                <Link 
+                  to="/dashboard" 
+                  className="px-4 py-2 text-text hover:text-primary hover:bg-primary/10 rounded-lg transition-all font-medium"
+                >
+                  Dashboard
+                </Link>
+                <Link 
+                  to="/map" 
+                  className="px-4 py-2 text-text hover:text-primary hover:bg-primary/10 rounded-lg transition-all font-medium"
+                >
+                  Locations
+                </Link>
+              </>
+            )}
+          </nav>
+>>>>>>> Stashed changes
 
           <div className="flex items-center space-x-2">
             {user ? (
@@ -61,12 +82,17 @@ export default function Header() {
               <>
                 <Link
                   to="/"
+<<<<<<< Updated upstream
                   className="px-3 py-2 text-text hover:text-primary hover:bg-primary/10 rounded-lg transition-all font-medium"
+=======
+                  className="px-4 py-2 text-text hover:text-primary hover:bg-primary/10 rounded-lg transition-all font-medium"
+>>>>>>> Stashed changes
                 >
                   Home
                 </Link>
                 <Link
                   to="/login"
+<<<<<<< Updated upstream
                   className="px-5 py-2.5 bg-white text-primary border-2 border-primary rounded-xl hover:bg-primary/5 hover:shadow-lg hover:scale-105 transition-all font-semibold"
                 >
                   Login
@@ -77,6 +103,12 @@ export default function Header() {
                 >
                   Create Account
                 </Link>
+=======
+                  className="px-6 py-2.5 bg-gradient-to-r from-primary to-accent text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all font-semibold"
+                >
+                  Login
+                </Link>
+>>>>>>> Stashed changes
               </>
             )}
           </div>

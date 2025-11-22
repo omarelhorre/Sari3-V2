@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#4CAF50',
+        primary: '#10b981', // Green color for hospital theme (from guide)
         secondary: '#2E7D32',
         accent: '#43A047',
         background: '#F5F7FA',

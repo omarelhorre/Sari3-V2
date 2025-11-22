@@ -57,6 +57,7 @@ function Home() {
           <p className="text-2xl text-text mb-4 max-w-2xl mx-auto">
             Choose your hospital to access patient services
           </p>
+<<<<<<< Updated upstream
           <p className="text-lg text-text/70">
             {hospitals.length} available hospitals
           </p>
@@ -89,6 +90,8 @@ function Home() {
               <p className="text-text">3rd year engineering student at Computer Science</p>
             </div>
           </div>
+=======
+>>>>>>> Stashed changes
         </div>
 
         {/* Thanks Section */}

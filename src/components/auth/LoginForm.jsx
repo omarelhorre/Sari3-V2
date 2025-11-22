@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth'
 import LoadingSpinner from '../common/LoadingSpinner'
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -18,7 +18,7 @@ export default function LoginForm() {
     setError('')
     setLoading(true)
 
-    const { data, error: signInError } = await signIn(email, password)
+    const { data, error: signInError } = await signIn(username, password)
 
     if (signInError) {
       setError(signInError.message)
@@ -27,7 +27,14 @@ export default function LoginForm() {
     }
 
     if (data?.user) {
+<<<<<<< Updated upstream
       navigate(redirectTo)
+=======
+      navigate('/dashboard')
+    } else {
+      setError('Login failed. Please try again.')
+      setLoading(false)
+>>>>>>> Stashed changes
     }
   }
 
@@ -52,17 +59,17 @@ export default function LoginForm() {
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-text mb-2">
-              Email
+            <label htmlFor="username" className="block text-sm font-medium text-text mb-2">
+              Username
             </label>
             <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-              placeholder="Enter your email"
+              placeholder="Enter your username"
             />
           </div>
 
