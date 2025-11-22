@@ -8,10 +8,10 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('waiting')
 
   const tabs = [
-    { id: 'waiting', label: 'Waiting Lists', icon: '⏱️' },
-    { id: 'blood', label: 'Blood Bank', icon: '🩸' },
-    { id: 'doctors', label: 'Doctors', icon: '👨‍⚕️' },
-    { id: 'reviews', label: 'Reviews', icon: '⭐' },
+    { id: 'waiting', label: 'Waiting Lists' },
+    { id: 'blood', label: 'Blood Bank' },
+    { id: 'doctors', label: 'Doctors' },
+    { id: 'reviews', label: 'Reviews' },
   ]
 
   return (
@@ -35,7 +35,6 @@ export default function Dashboard() {
                     : 'text-text hover:text-primary'
                 }`}
               >
-                <span className="mr-2 text-xl">{tab.icon}</span>
                 {tab.label}
                 {activeTab === tab.id && (
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-accent rounded-t-full"></div>

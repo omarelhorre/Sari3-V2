@@ -90,7 +90,7 @@ export default function ReviewsTab() {
                 </div>
                 {review.rating && (
                   <div className="text-primary font-semibold">
-                    {'⭐'.repeat(review.rating)}
+                    {review.rating}/5
                   </div>
                 )}
               </div>

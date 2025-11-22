@@ -134,7 +134,7 @@ export function AuthProvider({ children }) {
         email: 'admin@mohammed6.hospital',
         role: 'admin',
         hospital: 'mohammed-6',
-        hospitalName: 'Mohammed 6 Hospital',
+        hospitalName: 'Tetouan Medical center',  // Changed from 'Mohammed 6 Hospital'
         user_metadata: { role: 'admin', hospital: 'mohammed-6' },
         app_metadata: { role: 'admin' },
       }
