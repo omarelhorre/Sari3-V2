@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '../../contexts/AuthContext'
 import { useNavigate, useParams } from 'react-router-dom'
 import LoadingSpinner from '../common/LoadingSpinner'
 

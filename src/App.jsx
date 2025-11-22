@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from './hooks/useAuth'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Header from './components/common/Header'
 import LoginForm from './components/auth/LoginForm'
 import SignupForm from './components/auth/SignupForm'
@@ -32,7 +32,7 @@ function Home() {
     },
     {
       id: 'mohammed-6',
-      name: 'Mohammed 6 Hospital',
+      name: 'Tetouan Medical center',
       location: 'Tetouan, Morocco',
     },
   ]
@@ -122,34 +122,36 @@ function Home() {
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-background">
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/signup" element={<SignupForm />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/map"
-            element={
-              <ProtectedRoute>
-                <MapView />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/hospital/:hospitalId"
-            element={<HospitalDetail />}
-          />
-        </Routes>
-      </div>
+      <AuthProvider>
+        <div className="min-h-screen bg-background">
+          <Header />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/signup" element={<SignupForm />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/map"
+              element={
+                <ProtectedRoute>
+                  <MapView />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hospital/:hospitalId"
+              element={<HospitalDetail />}
+            />
+          </Routes>
+        </div>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

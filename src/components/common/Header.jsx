@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '../../contexts/AuthContext'
 
 export default function Header() {
   const { user, signOut } = useAuth()
@@ -49,7 +49,7 @@ export default function Header() {
                 <div className="hidden sm:flex items-center space-x-2 px-4 py-2 bg-primary/10 rounded-lg">
                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                   <span className="text-sm text-text font-medium">
-                    {user.email?.split('@')[0]}
+                    Logged in as {user.email?.split('@')[0]}
                   </span>
                 </div>
                 <button

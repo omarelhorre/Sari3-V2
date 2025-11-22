@@ -1,38 +1,44 @@
-export default function MapView() {
-  // Saniat Rmel Hospital coordinates (Tetouan, Morocco)
-  const saniatRmel = [35.5889, -5.3626]
+import { useState } from 'react'
 
-  // Mock nearby hospitals
+export default function MapView() {
+  // Mock nearby hospitals with coordinates
   const hospitals = [
     {
-      id: 1,
+      id: 'saniat-rmel',
       name: 'Saniat Rmel Hospital',
       address: 'Tetouan, Morocco',
       phone: '+212 539-XXXXXX',
+      coordinates: [35.5889, -5.3626],
       isMain: true,
     },
     {
-      id: 2,
-      name: 'Tetouan Medical Center',
+      id: 'mohammed-6',
+      name: 'Tetouan Medical center',
       address: 'Tetouan, Morocco',
       phone: '+212 539-XXXXXX',
+      coordinates: [35.5723, -5.3701],
       isMain: false,
     },
     {
-      id: 3,
+      id: 'ibn-sina',
       name: 'Ibn Sina Hospital',
       address: 'Tetouan, Morocco',
       phone: '+212 539-XXXXXX',
+      coordinates: [35.5950, -5.3550],
       isMain: false,
     },
     {
-      id: 4,
+      id: 'al-andalus',
       name: 'Al Andalus Clinic',
       address: 'Tetouan, Morocco',
       phone: '+212 539-XXXXXX',
+      coordinates: [35.5800, -5.3750],
       isMain: false,
     },
   ]
+
+  // Default to Saniat Rmel Hospital
+  const [selectedHospital, setSelectedHospital] = useState(hospitals[0])
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,9 +57,11 @@ export default function MapView() {
               </div>
             </div>
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-secondary mb-2">Saniat Rmel Hospital</h2>
-              <p className="text-text mb-4">Tetouan, Morocco</p>
-              <p className="text-primary font-semibold">Coordinates: 35.5889° N, 5.3626° W</p>
+              <h2 className="text-2xl font-bold text-secondary mb-2">{selectedHospital.name}</h2>
+              <p className="text-text mb-4">{selectedHospital.address}</p>
+              <p className="text-primary font-semibold">
+                Coordinates: {Math.abs(selectedHospital.coordinates[0]).toFixed(4)}° {selectedHospital.coordinates[0] >= 0 ? 'N' : 'S'}, {Math.abs(selectedHospital.coordinates[1]).toFixed(4)}° {selectedHospital.coordinates[1] >= 0 ? 'E' : 'W'}
+              </p>
             </div>
           </div>
         </div>
@@ -63,7 +71,12 @@ export default function MapView() {
           {hospitals.map((hospital) => (
             <div
               key={hospital.id}
-              className={`group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 ${
+              onClick={() => setSelectedHospital(hospital)}
+              className={`group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer ${
+                selectedHospital.id === hospital.id
+                  ? 'ring-4 ring-primary ring-opacity-50'
+                  : ''
+              } ${
                 hospital.isMain
                   ? 'bg-gradient-to-br from-primary to-accent text-white'
                   : 'bg-white'

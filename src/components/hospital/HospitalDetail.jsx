@@ -12,7 +12,7 @@ const hospitals = {
   },
   'mohammed-6': {
     id: 'mohammed-6',
-    name: 'Mohammed 6 Hospital',
+    name: 'Tetouan Medical center',
     location: 'Tetouan, Morocco',
     description: 'Advanced medical care and excellence in healthcare',
   },
