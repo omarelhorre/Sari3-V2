@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNavigate, useParams } from 'react-router-dom'
+import { supabase } from '../../lib/supabaseClient'
 import LoadingSpinner from '../common/LoadingSpinner'
 
 // Simple Modal Component
@@ -26,16 +27,40 @@ export default function ReviewForm({ onClose, onSuccess }) {
   const { hospitalId } = useParams()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [doctors, setDoctors] = useState([])
+  const [loadingDoctors, setLoadingDoctors] = useState(true)
   const [formData, setFormData] = useState({
     reviewer_name: user?.email?.split('@')[0] || '',
     rating: '',
-    content: ''
+    content: '',
+    doctor_id: ''
   })
+
+  useEffect(() => {
+    fetchDoctors()
+  }, [])
 
   // If not authenticated, redirect to login
   if (!user) {
     navigate(`/login?redirect=/hospital/${hospitalId}`)
     return null
+  }
+
+  const fetchDoctors = async () => {
+    try {
+      setLoadingDoctors(true)
+      const { data, error } = await supabase
+        .from('doctors')
+        .select('id, name, specialization')
+        .order('name')
+
+      if (error) throw error
+      setDoctors(data || [])
+    } catch (error) {
+      console.error('Error fetching doctors:', error)
+    } finally {
+      setLoadingDoctors(false)
+    }
   }
 
   const handleChange = (e) => {
@@ -49,13 +74,59 @@ export default function ReviewForm({ onClose, onSuccess }) {
     setSubmitting(true)
 
     try {
-      // This would insert into reviews table when implemented
-      // For now, just simulate success
-      await new Promise(resolve => setTimeout(resolve, 500))
+      if (!formData.content.trim()) {
+        setError('Please enter review content')
+        setSubmitting(false)
+        return
+      }
+
+      // Get hospital_id from URL or user context
+      let currentHospitalId = hospitalId
       
+      // If no hospitalId in URL, try to get from user context (for admin users)
+      if (!currentHospitalId && user) {
+        if (user.hospital) {
+          currentHospitalId = user.hospital
+        } else if (user.user_metadata?.hospital) {
+          currentHospitalId = user.user_metadata.hospital
+        }
+      }
+      
+      // Require hospital_id to submit a review
+      if (!currentHospitalId) {
+        setError('Hospital information is required to submit a review')
+        setSubmitting(false)
+        return
+      }
+      
+      // Insert review into database
+      const reviewData = {
+        reviewer_name: formData.reviewer_name || user?.email?.split('@')[0] || 'Anonymous',
+        rating: formData.rating ? parseInt(formData.rating) : null,
+        content: formData.content,
+        hospital_id: currentHospitalId,
+        user_id: user?.id || null
+      }
+
+      // Add doctor_id only if a doctor was selected
+      if (formData.doctor_id) {
+        reviewData.doctor_id = formData.doctor_id
+      }
+
+      const { data, error } = await supabase
+        .from('reviews')
+        .insert(reviewData)
+        .select()
+
+      if (error) {
+        console.error('Review insert error:', error)
+        throw error
+      }
+
+      console.log('Review submitted successfully:', data)
       onSuccess()
     } catch (err) {
-      setError('Failed to submit review. Please try again.')
+      setError(`Failed to submit review: ${err.message || 'Please try again.'}`)
       console.error('Error submitting review:', err)
     } finally {
       setSubmitting(false)
@@ -88,6 +159,32 @@ export default function ReviewForm({ onClose, onSuccess }) {
               placeholder={user.email?.split('@')[0] || 'Optional'}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
             />
+          </div>
+
+          <div>
+            <label htmlFor="doctor_id" className="block text-sm font-medium text-text mb-2">
+              Review a Doctor (Optional)
+            </label>
+            {loadingDoctors ? (
+              <div className="w-full px-4 py-3 border border-gray-300 rounded-lg flex items-center justify-center">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <select
+                id="doctor_id"
+                name="doctor_id"
+                value={formData.doctor_id}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+              >
+                <option value="">General Hospital Review</option>
+                {doctors.map((doctor) => (
+                  <option key={doctor.id} value={doctor.id}>
+                    {doctor.name} - {doctor.specialization}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div>

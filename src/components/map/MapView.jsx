@@ -9,7 +9,7 @@ export default function MapView() {
       address: 'Tetouan, Morocco',
       phone: '+212 539-XXXXXX',
       coordinates: [35.5889, -5.3626],
-      isMain: true,
+      isMain: false,
       color: '#4CAF50', // Primary green
     },
     {
@@ -61,7 +61,7 @@ export default function MapView() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-secondary mb-2">Hospital Locations</h1>
-          <p className="text-text text-lg">Find Saniat Rmel Hospital and nearby medical facilities</p>
+          <p className="text-text text-lg">Find hospitals and medical facilities in your area</p>
         </div>
 
         {/* Static Map Image with Modern Design */}

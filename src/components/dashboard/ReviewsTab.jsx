@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { useAuth } from '../../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import ReviewForm from './ReviewForm'
 import LoadingSpinner from '../common/LoadingSpinner'
 import Button from '../common/Button'
@@ -9,21 +9,123 @@ import Button from '../common/Button'
 export default function ReviewsTab() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { hospitalId } = useParams()
   const [reviews, setReviews] = useState([])
+  const [doctorsMap, setDoctorsMap] = useState({})
   const [showReviewForm, setShowReviewForm] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    fetchDoctors()
     fetchReviews()
-  }, [])
+
+    // Set up real-time subscription
+    const subscription = supabase
+      .channel('reviews_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'reviews',
+        },
+        () => {
+          fetchReviews()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [hospitalId])
+
+  const fetchDoctors = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('doctors')
+        .select('id, name, specialization')
+
+      if (error) {
+        console.error('Error fetching doctors:', error)
+        return
+      }
+
+      // Create a map of doctor_id -> doctor info
+      const map = {}
+      data?.forEach(doctor => {
+        map[doctor.id] = doctor
+      })
+      setDoctorsMap(map)
+    } catch (error) {
+      console.error('Error fetching doctors:', error)
+    }
+  }
 
   const fetchReviews = async () => {
     try {
-      // This would need to be updated to fetch reviews for the current hospital
-      // For now, we'll just set loading to false
-      setReviews([])
+      setLoading(true)
+      // Get hospital_id from URL or user context
+      let currentHospitalId = hospitalId
+      
+      // If no hospitalId in URL, try to get from user context (for admin users)
+      if (!currentHospitalId && user) {
+        if (user.hospital) {
+          currentHospitalId = user.hospital
+        } else if (user.user_metadata?.hospital) {
+          currentHospitalId = user.user_metadata.hospital
+        }
+      }
+      
+      // Build query
+      let query = supabase
+        .from('reviews')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      // Filter by hospital_id if available
+      if (currentHospitalId) {
+        try {
+          query = query.eq('hospital_id', currentHospitalId)
+        } catch (filterError) {
+          // If hospital_id column doesn't exist, fetch all reviews
+          console.log('hospital_id column may not exist, fetching all reviews')
+        }
+      }
+
+      const { data, error } = await query
+
+      if (error) {
+        // If error is about hospital_id, try without filter
+        if (error.message?.includes('hospital_id') || error.code === '42703' || error.code === 'PGRST116') {
+          const { data: allData, error: allError } = await supabase
+            .from('reviews')
+            .select('*')
+            .order('created_at', { ascending: false })
+          
+          if (allError) throw allError
+          
+          // Filter client-side if hospital_id exists in data and we have a currentHospitalId
+          let filteredData = allData || []
+          if (currentHospitalId && allData && allData.length > 0 && allData[0].hasOwnProperty('hospital_id')) {
+            filteredData = allData.filter(item => item.hospital_id === currentHospitalId)
+          }
+          setReviews(filteredData)
+        } else {
+          throw error
+        }
+      } else {
+        // If no hospitalId, show all reviews (or empty if filtering is needed)
+        if (!currentHospitalId && data && data.length > 0 && data[0].hasOwnProperty('hospital_id')) {
+          // If we have hospital_id column but no currentHospitalId, show empty
+          setReviews([])
+        } else {
+          setReviews(data || [])
+        }
+      }
     } catch (error) {
       console.error('Error fetching reviews:', error)
+      setReviews([])
     } finally {
       setLoading(false)
     }
@@ -87,6 +189,11 @@ export default function ReviewsTab() {
                   <p className="text-sm text-text/70">
                     {new Date(review.created_at).toLocaleDateString()}
                   </p>
+                  {review.doctor_id && doctorsMap[review.doctor_id] && (
+                    <p className="text-sm text-primary font-medium mt-1">
+                      Review for: {doctorsMap[review.doctor_id].name} - {doctorsMap[review.doctor_id].specialization}
+                    </p>
+                  )}
                 </div>
                 {review.rating && (
                   <div className="text-primary font-semibold">
