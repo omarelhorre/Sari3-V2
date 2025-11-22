@@ -1,34 +1,80 @@
-# Saniat Rmel Hospital Patient Portal
+Reviewing the current README and project structure to draft an updated README:
 
-A modern patient portal web application for Saniat Rmel Hospital in Tetouan, Morocco. Built with React, Vite, Tailwind CSS, and Supabase.
 
-## Features
+[4 tools called]
 
-- 🔐 **Patient Authentication** - Secure login and signup
+
+Checking additional details:
+
+
+[3 tools called]
+
+
+Updated README:
+
+```markdown
+# Sarii Space (Sari3) - Hospital Patient Portal
+
+A modern, multi-hospital patient portal web application for hospitals in Tetouan, Morocco. Built with React, Vite, Tailwind CSS, and Supabase. This platform allows patients to manage appointments, view hospital information, submit reviews, and enables administrators to manage hospital operations.
+
+## 🌟 Features
+
+### Patient Features
+- 🔐 **Authentication** - Secure login and signup system
 - ⏱️ **Real-time Waiting Lists** - Join department queues with live updates
-- 🩸 **Blood Bank Inventory** - View blood type availability
-- 👨‍⚕️ **Doctor Directory** - Browse doctors and their availability
-- 🗺️ **Interactive Map** - Find hospital locations
+- 🩸 **Blood Bank Inventory** - View real-time blood type availability
+- 👨‍⚕️ **Doctor Directory** - Browse doctors, specializations, and availability status
+- ⭐ **Reviews System** - Submit and view hospital/doctor reviews with ratings
+- 🗺️ **Hospital Locations** - Interactive map showing all hospital locations
+- 🏥 **Multi-Hospital Support** - Access different hospitals from a single platform
 
-## Tech Stack
+### Admin Features
+- 📊 **Admin Dashboard** - Comprehensive management interface
+- 📋 **Waiting List Management** - View and delete patients from waiting lists
+- 🩸 **Blood Bank Management** - Update blood inventory in real-time
+- 🔄 **Real-time Updates** - All changes sync instantly across the platform
+
+### Additional Features
+- 👥 **Contributors Section** - Meet the development team
+- 🙏 **Special Thanks** - Acknowledgment section
+- 📧 **Contact Information** - Easy way to reach the team
+- 📱 **Responsive Design** - Works seamlessly on all devices
+- 🎨 **Modern UI/UX** - Beautiful, intuitive interface with smooth animations
+
+## 🛠️ Tech Stack
 
 - **Frontend**: React 18 + Vite
 - **Styling**: Tailwind CSS
 - **Backend**: Supabase (PostgreSQL + Auth + Real-time)
-- **Maps**: Leaflet + OpenStreetMap
+- **Routing**: React Router DOM
+- **Icons**: Font Awesome
+- **State Management**: React Context API
 
-## Setup Instructions
+## 📋 Prerequisites
 
-### 1. Install Dependencies
+- Node.js (v16 or higher)
+- npm or yarn
+- Supabase account
+
+## 🚀 Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/omarelhorre/Sari3-V2.git
+cd Sari3-V2
+```
+
+### 2. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Set Up Supabase
+### 3. Set Up Supabase
 
 1. Create a project at [supabase.com](https://supabase.com)
-2. Go to Settings > API to get your project URL and anon key
+2. Go to **Settings > API** to get your project URL and anon key
 3. Create a `.env.local` file in the root directory:
 
 ```env
@@ -36,11 +82,16 @@ VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-### 3. Set Up Database Tables
+### 4. Set Up Database Tables
 
-Run these SQL commands in your Supabase SQL Editor:
+Run these SQL scripts in your Supabase SQL Editor in order:
+
+#### Step 1: Core Tables
 
 ```sql
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- Create departments table
 CREATE TABLE departments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -79,21 +130,54 @@ CREATE TABLE blood_bank (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Enable Row Level Security
+-- Create reviews table
+CREATE TABLE reviews (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  hospital_id TEXT NOT NULL,
+  doctor_id UUID REFERENCES doctors(id) ON DELETE SET NULL,
+  reviewer_name TEXT NOT NULL,
+  rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+  content TEXT NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### Step 2: Enable Row Level Security
+
+```sql
+-- Enable RLS
 ALTER TABLE waiting_list ENABLE ROW LEVEL SECURITY;
 ALTER TABLE doctors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blood_bank ENABLE ROW LEVEL SECURITY;
 ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
-
--- Create policies (users can read all, insert their own waiting list entries)
-CREATE POLICY "Users can view waiting lists" ON waiting_list FOR SELECT USING (true);
-CREATE POLICY "Users can insert waiting lists" ON waiting_list FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can view doctors" ON doctors FOR SELECT USING (true);
-CREATE POLICY "Users can view blood bank" ON blood_bank FOR SELECT USING (true);
-CREATE POLICY "Users can view departments" ON departments FOR SELECT USING (true);
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 ```
 
-### 4. Seed Initial Data
+#### Step 3: Create RLS Policies
+
+```sql
+-- Waiting List Policies
+CREATE POLICY "Users can view waiting lists" ON waiting_list FOR SELECT USING (true);
+CREATE POLICY "Users can insert waiting lists" ON waiting_list FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Anyone can delete waiting lists" ON waiting_list FOR DELETE USING (true);
+
+-- Doctor Policies
+CREATE POLICY "Users can view doctors" ON doctors FOR SELECT USING (true);
+
+-- Blood Bank Policies
+CREATE POLICY "Users can view blood bank" ON blood_bank FOR SELECT USING (true);
+CREATE POLICY "Anyone can update blood bank" ON blood_bank FOR UPDATE USING (true) WITH CHECK (true);
+
+-- Department Policies
+CREATE POLICY "Users can view departments" ON departments FOR SELECT USING (true);
+
+-- Review Policies
+CREATE POLICY "Anyone can view reviews" ON reviews FOR SELECT USING (true);
+CREATE POLICY "Anyone can insert reviews" ON reviews FOR INSERT WITH CHECK (true);
+```
+
+#### Step 4: Seed Initial Data
 
 ```sql
 -- Insert departments
@@ -124,6 +208,14 @@ INSERT INTO blood_bank (blood_type, units) VALUES
 ('AB-', 1);
 ```
 
+#### Step 5: Enable Real-time Replication
+
+1. Go to **Database > Replication** in Supabase dashboard
+2. Enable replication for the following tables:
+   - `waiting_list`
+   - `blood_bank`
+   - `reviews`
+
 ### 5. Run Development Server
 
 ```bash
@@ -132,55 +224,151 @@ npm run dev
 
 The app will be available at `http://localhost:5173`
 
-## Project Structure
+## 👤 Admin Access
+
+The application includes mock admin authentication for testing. Use these credentials:
+
+### Admin 1 (Saniat Rmel Hospital)
+- **Username**: `admin1`
+- **Password**: `admin123`
+- **Hospital**: Saniat Rmel Hospital
+
+### Admin 2 (Tetouan Medical center)
+- **Username**: `admin2`
+- **Password**: `admin123`
+- **Hospital**: Tetouan Medical center
+
+## 📁 Project Structure
 
 ```
 src/
 ├── components/
+│   ├── admin/
+│   │   ├── AdminBloodBankTab.jsx      # Blood bank management
+│   │   ├── AdminDashboard.jsx         # Main admin interface
+│   │   └── AdminWaitingList.jsx       # Waiting list management
 │   ├── auth/
-│   │   ├── LoginForm.jsx
-│   │   └── SignupForm.jsx
+│   │   ├── LoginForm.jsx              # Login component
+│   │   └── SignupForm.jsx             # Signup component
 │   ├── common/
-│   │   ├── Header.jsx
-│   │   ├── JoinQueueModal.jsx
-│   │   └── LoadingSpinner.jsx
+│   │   ├── Button.jsx                 # Reusable button
+│   │   ├── Form.jsx                   # Reusable form
+│   │   ├── Header.jsx                 # Navigation header
+│   │   ├── JoinQueueModal.jsx         # Queue joining modal
+│   │   ├── LoadingSpinner.jsx        # Loading indicator
+│   │   └── Modal.jsx                  # Reusable modal
 │   ├── dashboard/
-│   │   ├── Dashboard.jsx
-│   │   ├── WaitingListTab.jsx
-│   │   ├── BloodBankTab.jsx
-│   │   └── DoctorsTab.jsx
+│   │   ├── BloodBankTab.jsx           # Blood bank display
+│   │   ├── Dashboard.jsx              # Patient dashboard
+│   │   ├── DoctorsTab.jsx             # Doctor directory
+│   │   ├── ReviewForm.jsx             # Review submission form
+│   │   ├── ReviewsTab.jsx             # Reviews display
+│   │   └── WaitingListTab.jsx         # Waiting list display
+│   ├── hospital/
+│   │   ├── HospitalCard.jsx           # Hospital card component
+│   │   └── HospitalDetail.jsx        # Hospital detail page
 │   └── map/
-│       └── MapView.jsx
+│       ├── MapView.jsx                # Hospital locations map
+│       └── ParticleBackground.jsx     # Animated background
+├── contexts/
+│   └── AuthContext.jsx                # Authentication context
 ├── hooks/
-│   └── useAuth.js
+│   └── useAuth.js                     # Auth hook (legacy)
 ├── lib/
-│   └── supabaseClient.js
-├── App.jsx
-├── main.jsx
-└── index.css
+│   └── supabaseClient.js              # Supabase client config
+├── App.jsx                            # Main app component
+├── main.jsx                           # Entry point
+└── index.css                          # Global styles
 ```
 
-## Design System
+## 🎨 Design System
 
 Colors from `design.json`:
-- Primary: #4CAF50 (green)
-- Secondary: #2E7D32 (dark green)
-- Accent: #43A047 (bright green)
-- Background: #F5F7FA (light gray)
-- Text: #4D4D4D (dark gray)
+- **Primary**: `#4CAF50` (green)
+- **Secondary**: `#2E7D32` (dark green)
+- **Accent**: `#43A047` (bright green)
+- **Background**: `#F5F7FA` (light gray)
+- **Text**: `#4D4D4D` (dark gray)
 
-## Deployment
+## 🏥 Supported Hospitals
+
+Currently, the platform supports:
+- **Saniat Rmel Hospital** - Tetouan, Morocco
+- **Tetouan Medical center** - Tetouan, Morocco
+
+## 📝 Key Features Explained
+
+### Reviews System
+- Patients can submit reviews for hospitals or specific doctors
+- Optional doctor selection when submitting reviews
+- Rating system (1-5 stars)
+- Real-time updates when new reviews are submitted
+- Reviews are filtered by hospital
+
+### Admin Dashboard
+- **Waiting List Tab**: View all patients in waiting lists, delete entries with confirmation
+- **Blood Bank Tab**: Update blood inventory quantities in real-time
+- All changes sync instantly with patient dashboards
+
+### Real-time Features
+- Waiting list updates
+- Blood bank inventory changes
+- New review submissions
+- All powered by Supabase real-time subscriptions
+
+## 🚀 Deployment
 
 ### Deploy to Vercel
 
 1. Push your code to GitHub
-2. Import project in Vercel
+2. Import project in [Vercel](https://vercel.com)
 3. Add environment variables:
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
 4. Deploy!
 
-## License
+### Deploy to Netlify
+
+1. Push your code to GitHub
+2. Import project in [Netlify](https://netlify.com)
+3. Add environment variables in site settings
+4. Deploy!
+
+## 👥 Contributors
+
+- **Reda Zakaria** - 3rd year engineering student at Computer Science
+- **Omar El Horre** - 3rd year engineering student at Computer Science
+
+### Special Thanks
+
+- **Hiba El Bouhaddioui** - 2nd year engineering student at preparatory classes
+- **Abdellah Raissouni** - 5th year engineering student at computer science
+
+## 📧 Contact
+
+For inquiries, please contact: **elhorre.omar@etu.uae.ac.ma**
+
+## 📄 License
 
 MIT
 
+## 🔄 Version
+
+**Version 2.0** - Multi-hospital support with reviews and admin management
+
+---
+
+**Copyright © 2025-2026**
+```
+
+This README includes:
+- Updated project name and description
+- All current features (reviews, admin dashboard, multi-hospital support)
+- Complete database setup instructions
+- Admin login credentials
+- Updated project structure
+- Real-time features documentation
+- Contributors and contact information
+- Deployment instructions
+
+Copy this into your README.md file.
