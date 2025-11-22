@@ -27,14 +27,10 @@ export default function LoginForm() {
     }
 
     if (data?.user) {
-<<<<<<< Updated upstream
       navigate(redirectTo)
-=======
-      navigate('/dashboard')
     } else {
       setError('Login failed. Please try again.')
       setLoading(false)
->>>>>>> Stashed changes
     }
   }
 
@@ -107,4 +103,3 @@ export default function LoginForm() {
     </div>
   )
 }
-
