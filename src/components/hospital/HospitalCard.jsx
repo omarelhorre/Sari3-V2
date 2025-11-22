@@ -8,7 +8,7 @@ export default function HospitalCard({ hospital }) {
     >
       <div className="flex items-center justify-center mb-6">
         <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-          <span className="text-white text-4xl">🏥</span>
+          <i className="fas fa-hospital text-white text-4xl"></i>
         </div>
       </div>
       <h3 className="text-2xl font-bold text-secondary mb-3 text-center group-hover:text-primary transition-colors">

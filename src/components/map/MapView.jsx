@@ -10,6 +10,7 @@ export default function MapView() {
       phone: '+212 539-XXXXXX',
       coordinates: [35.5889, -5.3626],
       isMain: true,
+      color: '#4CAF50', // Primary green
     },
     {
       id: 'mohammed-6',
@@ -18,6 +19,7 @@ export default function MapView() {
       phone: '+212 539-XXXXXX',
       coordinates: [35.5723, -5.3701],
       isMain: false,
+      color: '#43A047', // Accent green
     },
     {
       id: 'ibn-sina',
@@ -26,6 +28,7 @@ export default function MapView() {
       phone: '+212 539-XXXXXX',
       coordinates: [35.5950, -5.3550],
       isMain: false,
+      color: '#66BB6A', // Light green
     },
     {
       id: 'al-andalus',
@@ -34,92 +37,231 @@ export default function MapView() {
       phone: '+212 539-XXXXXX',
       coordinates: [35.5800, -5.3750],
       isMain: false,
+      color: '#81C784', // Lighter green
     },
   ]
 
-  // Default to Saniat Rmel Hospital
-  const [selectedHospital, setSelectedHospital] = useState(hospitals[0])
+  // No hospital selected by default
+  const [selectedHospital, setSelectedHospital] = useState(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [particleColor, setParticleColor] = useState('#4CAF50') // Default primary color
+
+  const handleHospitalClick = (hospital) => {
+    setIsTransitioning(true)
+    setParticleColor(hospital.color)
+    
+    setTimeout(() => {
+      setSelectedHospital(hospital)
+      setIsTransitioning(false)
+    }, 300)
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-secondary mb-2">Hospital Locations</h1>
           <p className="text-text text-lg">Find Saniat Rmel Hospital and nearby medical facilities</p>
         </div>
 
         {/* Static Map Image with Modern Design */}
-        <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-8 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-center mb-6">
-              <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-white text-4xl">📍</span>
+        {selectedHospital ? (
+          <div 
+            className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-8 mb-8 backdrop-blur-sm transition-all duration-500"
+            style={{
+              background: `linear-gradient(135deg, ${particleColor}15, ${particleColor}08)`,
+              boxShadow: `0 20px 60px ${particleColor}20`,
+            }}
+          >
+            <div className="bg-white/90 backdrop-blur-md rounded-xl shadow-xl p-6 border border-white/20 transform transition-all duration-500 hover:scale-[1.02]">
+              <div className="flex items-center justify-center mb-6">
+                <div 
+                  className="w-20 h-20 rounded-full flex items-center justify-center shadow-2xl transform transition-all duration-500 hover:scale-110 hover:rotate-12"
+                  style={{
+                    background: `linear-gradient(135deg, ${particleColor}, ${particleColor}CC)`,
+                    boxShadow: `0 10px 30px ${particleColor}40`,
+                  }}
+                >
+                  <i className="fas fa-map-marker-alt text-white text-4xl"></i>
+                </div>
+              </div>
+              <div className="text-center">
+                <h2 
+                  className="text-2xl font-bold mb-2 transition-colors duration-500"
+                  style={{ color: particleColor }}
+                >
+                  {selectedHospital.name}
+                </h2>
+                <p className="text-text mb-4">{selectedHospital.address}</p>
+                <p 
+                  className="font-semibold transition-colors duration-500"
+                  style={{ color: particleColor }}
+                >
+                  Coordinates: {Math.abs(selectedHospital.coordinates[0]).toFixed(4)}° {selectedHospital.coordinates[0] >= 0 ? 'N' : 'S'}, {Math.abs(selectedHospital.coordinates[1]).toFixed(4)}° {selectedHospital.coordinates[1] >= 0 ? 'E' : 'W'}
+                </p>
               </div>
             </div>
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-secondary mb-2">{selectedHospital.name}</h2>
-              <p className="text-text mb-4">{selectedHospital.address}</p>
-              <p className="text-primary font-semibold">
-                Coordinates: {Math.abs(selectedHospital.coordinates[0]).toFixed(4)}° {selectedHospital.coordinates[0] >= 0 ? 'N' : 'S'}, {Math.abs(selectedHospital.coordinates[1]).toFixed(4)}° {selectedHospital.coordinates[1] >= 0 ? 'E' : 'W'}
-              </p>
+          </div>
+        ) : (
+          <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-8 mb-8 backdrop-blur-sm">
+            <div className="bg-white/90 backdrop-blur-md rounded-xl shadow-xl p-6 border border-white/20">
+              <div className="flex items-center justify-center mb-6">
+                <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center shadow-lg">
+                  <i className="fas fa-map-marker-alt text-primary text-4xl"></i>
+                </div>
+              </div>
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-secondary mb-2">Select a Hospital</h2>
+                <p className="text-text">Click on any hospital card below to view its details</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Hospital Cards - Modern Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          {hospitals.map((hospital) => (
-            <div
-              key={hospital.id}
-              onClick={() => setSelectedHospital(hospital)}
-              className={`group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer ${
-                selectedHospital.id === hospital.id
-                  ? 'ring-4 ring-primary ring-opacity-50'
-                  : ''
-              } ${
-                hospital.isMain
-                  ? 'bg-gradient-to-br from-primary to-accent text-white'
-                  : 'bg-white'
-              }`}
-            >
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
-                      hospital.isMain ? 'bg-white/20' : 'bg-primary/10'
-                    }`}>
-                      <span className="text-2xl">🏥</span>
+          {hospitals.map((hospital) => {
+            const isSelected = selectedHospital?.id === hospital.id
+            return (
+              <div
+                key={hospital.id}
+                onClick={() => handleHospitalClick(hospital)}
+                className={`group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform ${
+                  isSelected
+                    ? 'scale-105 ring-4 z-10'
+                    : 'hover:scale-[1.02]'
+                } ${
+                  hospital.isMain
+                    ? 'bg-gradient-to-br from-primary to-accent text-white'
+                    : 'bg-white/90 backdrop-blur-sm'
+                }`}
+                style={{
+                  boxShadow: isSelected 
+                    ? `0 20px 60px ${hospital.color}40, 0 0 0 4px ${hospital.color}60`
+                    : undefined,
+                  border: isSelected ? `4px solid ${hospital.color}60` : undefined,
+                }}
+              >
+                {/* Animated background gradient on selection */}
+                {isSelected && (
+                  <div 
+                    className="absolute inset-0 opacity-20 animate-pulse"
+                    style={{
+                      background: `radial-gradient(circle at center, ${hospital.color}, transparent)`,
+                    }}
+                  />
+                )}
+                
+                {/* Particle burst effect on click */}
+                {isSelected && (
+                  <div 
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: `radial-gradient(circle at 50% 50%, ${hospital.color}20, transparent 70%)`,
+                      animation: 'particleBurst 0.6s ease-out',
+                    }}
+                  />
+                )}
+
+                <div className="p-8 relative z-10">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div 
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-all duration-500 ${
+                          hospital.isMain ? 'bg-white/20' : 'bg-primary/10'
+                        }`}
+                        style={{
+                          background: isSelected && !hospital.isMain 
+                            ? `${hospital.color}20` 
+                            : undefined,
+                          transform: isSelected ? 'scale(1.1) rotate(5deg)' : undefined,
+                        }}
+                      >
+                        <i 
+                          className={`fas fa-hospital text-2xl transition-colors duration-500 ${
+                            hospital.isMain ? 'text-white' : 'text-primary'
+                          }`}
+                          style={{
+                            color: isSelected && !hospital.isMain ? hospital.color : undefined,
+                          }}
+                        ></i>
+                      </div>
+                      <h3 
+                        className={`text-xl font-bold mb-2 transition-colors duration-500 ${
+                          hospital.isMain ? 'text-white' : 'text-secondary'
+                        }`}
+                        style={{
+                          color: isSelected && !hospital.isMain ? hospital.color : undefined,
+                        }}
+                      >
+                        {hospital.name}
+                      </h3>
+                      {hospital.isMain && (
+                        <span className="inline-block px-3 py-1 bg-white/20 text-white text-sm rounded-full font-semibold mb-3">
+                          Main Location
+                        </span>
+                      )}
+                      {isSelected && !hospital.isMain && (
+                        <span 
+                          className="inline-block px-3 py-1 text-white text-sm rounded-full font-semibold mb-3 animate-fade-in"
+                          style={{ backgroundColor: hospital.color }}
+                        >
+                          Selected
+                        </span>
+                      )}
                     </div>
-                    <h3 className={`text-xl font-bold mb-2 ${
-                      hospital.isMain ? 'text-white' : 'text-secondary'
-                    }`}>
-                      {hospital.name}
-                    </h3>
-                    {hospital.isMain && (
-                      <span className="inline-block px-3 py-1 bg-white/20 text-white text-sm rounded-full font-semibold mb-3">
-                        Main Location
-                      </span>
-                    )}
+                  </div>
+                  <div className={`space-y-2 ${
+                    hospital.isMain ? 'text-white/90' : 'text-text'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <i 
+                        className={`fas fa-map-marker-alt text-lg transition-colors duration-500 ${
+                          hospital.isMain ? 'text-white/90' : 'text-primary'
+                        }`}
+                        style={{
+                          color: isSelected && !hospital.isMain ? hospital.color : undefined,
+                        }}
+                      ></i>
+                      <span className="text-sm">{hospital.address}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <i 
+                        className={`fas fa-phone text-lg transition-colors duration-500 ${
+                          hospital.isMain ? 'text-white/90' : 'text-primary'
+                        }`}
+                        style={{
+                          color: isSelected && !hospital.isMain ? hospital.color : undefined,
+                        }}
+                      ></i>
+                      <span className="text-sm">{hospital.phone}</span>
+                    </div>
                   </div>
                 </div>
-                <div className={`space-y-2 ${
-                  hospital.isMain ? 'text-white/90' : 'text-text'
-                }`}>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">📍</span>
-                    <span className="text-sm">{hospital.address}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">📞</span>
-                    <span className="text-sm">{hospital.phone}</span>
-                  </div>
-                </div>
+                
+                {/* Hover effect overlay */}
+                {!hospital.isMain && !isSelected && (
+                  <div 
+                    className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      background: `linear-gradient(135deg, ${hospital.color}10, transparent)`,
+                    }}
+                  />
+                )}
+
+                {/* Shine effect on selection */}
+                {isSelected && (
+                  <div 
+                    className="absolute inset-0 pointer-events-none overflow-hidden"
+                    style={{
+                      background: `linear-gradient(45deg, transparent 30%, ${hospital.color}20 50%, transparent 70%)`,
+                      animation: 'shine 2s infinite',
+                    }}
+                  />
+                )}
               </div>
-              {!hospital.isMain && (
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              )}
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>

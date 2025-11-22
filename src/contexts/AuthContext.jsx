@@ -10,7 +10,15 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Check for mock user in localStorage first
+    // Check for admin user in localStorage first
+    const adminUser = localStorage.getItem('adminUser')
+    if (adminUser) {
+      setUser(JSON.parse(adminUser))
+      setLoading(false)
+      return
+    }
+
+    // Check for mock user in localStorage
     const mockUser = localStorage.getItem('mockUser')
     if (mockUser) {
       setUser(JSON.parse(mockUser))
@@ -19,8 +27,8 @@ export function AuthProvider({ children }) {
 
     // Get initial session from Supabase
     supabase.auth.getSession().then(({ data: { session } }) => {
-      // Only set if no mock user was found
-      if (!mockUser) {
+      // Only set if no admin or mock user was found
+      if (!adminUser && !mockUser) {
         setUser(session?.user ?? null)
         setLoading(false)
       }
@@ -30,17 +38,18 @@ export function AuthProvider({ children }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      // Check if we have a mock user first
+      // Check if we have an admin or mock user first
+      const currentAdminUser = localStorage.getItem('adminUser')
       const currentMockUser = localStorage.getItem('mockUser')
-      if (!currentMockUser) {
+      if (!currentAdminUser && !currentMockUser) {
         setUser(session?.user ?? null)
         setLoading(false)
       }
     })
 
-    // Listen for storage changes (for mock user) - works across tabs
+    // Listen for storage changes (for admin and mock user) - works across tabs
     const handleStorageChange = (e) => {
-      if (e.key === 'mockUser') {
+      if (e.key === 'adminUser' || e.key === 'mockUser') {
         if (e.newValue) {
           setUser(JSON.parse(e.newValue))
         } else {
@@ -52,10 +61,20 @@ export function AuthProvider({ children }) {
     window.addEventListener('storage', handleStorageChange)
 
     // Also check localStorage periodically for same-tab updates
+    let lastAdminUser = adminUser
     let lastMockUser = mockUser
     const interval = setInterval(() => {
+      const currentAdminUser = localStorage.getItem('adminUser')
       const currentMockUser = localStorage.getItem('mockUser')
-      if (currentMockUser !== lastMockUser) {
+      
+      if (currentAdminUser !== lastAdminUser) {
+        lastAdminUser = currentAdminUser
+        if (currentAdminUser) {
+          setUser(JSON.parse(currentAdminUser))
+        } else {
+          setUser(null)
+        }
+      } else if (currentMockUser !== lastMockUser) {
         lastMockUser = currentMockUser
         if (currentMockUser) {
           setUser(JSON.parse(currentMockUser))
@@ -92,6 +111,38 @@ export function AuthProvider({ children }) {
   }
 
   const signIn = async (username, password) => {
+    // Admin login: admin-saniat / admin123 → Saniat Rmel Hospital
+    if (username === 'admin-saniat' && password === 'admin123') {
+      const adminUser = {
+        id: 'admin-saniat-rmel-id',
+        email: 'admin@saniatrmel.hospital',
+        role: 'admin',
+        hospital: 'saniat-rmel',
+        hospitalName: 'Saniat Rmel Hospital',
+        user_metadata: { role: 'admin', hospital: 'saniat-rmel' },
+        app_metadata: { role: 'admin' },
+      }
+      setUser(adminUser)
+      localStorage.setItem('adminUser', JSON.stringify(adminUser))
+      return { data: { user: adminUser }, error: null }
+    }
+
+    // Admin login: admin-mohammed6 / admin123 → Mohammed 6 Hospital
+    if (username === 'admin-mohammed6' && password === 'admin123') {
+      const adminUser = {
+        id: 'admin-mohammed6-id',
+        email: 'admin@mohammed6.hospital',
+        role: 'admin',
+        hospital: 'mohammed-6',
+        hospitalName: 'Mohammed 6 Hospital',
+        user_metadata: { role: 'admin', hospital: 'mohammed-6' },
+        app_metadata: { role: 'admin' },
+      }
+      setUser(adminUser)
+      localStorage.setItem('adminUser', JSON.stringify(adminUser))
+      return { data: { user: adminUser }, error: null }
+    }
+
     // Mock login: test / test123
     if (username === 'test' && password === 'test123') {
       const mockUser = {
@@ -118,6 +169,8 @@ export function AuthProvider({ children }) {
   }
 
   const signOut = async () => {
+    // Clear admin user
+    localStorage.removeItem('adminUser')
     // Clear mock user
     localStorage.removeItem('mockUser')
     setUser(null)

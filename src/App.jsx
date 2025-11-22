@@ -8,6 +8,8 @@ import MapView from './components/map/MapView'
 import LoadingSpinner from './components/common/LoadingSpinner'
 import HospitalCard from './components/hospital/HospitalCard'
 import HospitalDetail from './components/hospital/HospitalDetail'
+import AdminDashboard from './components/admin/AdminDashboard'
+import ParticleBackground from './components/map/ParticleBackground'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -21,6 +23,26 @@ function ProtectedRoute({ children }) {
   }
 
   return user ? children : <Navigate to="/login" replace />
+}
+
+function AdminProtectedRoute({ children }) {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
+  }
+
+  // Check if user is admin
+  if (user && (user.role === 'admin' || user.user_metadata?.role === 'admin')) {
+    return children
+  }
+
+  // Redirect non-admin users to login
+  return <Navigate to="/login" replace />
 }
 
 function Home() {
@@ -49,7 +71,7 @@ function Home() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-16 animate-fade-in">
           <div className="w-32 h-32 bg-gradient-to-br from-primary to-accent rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl transform hover:scale-110 transition-transform">
-            <span className="text-white text-6xl">🏥</span>
+            <i className="fas fa-hospital text-white text-6xl"></i>
           </div>
           <h1 className="text-6xl font-bold bg-gradient-to-r from-secondary via-primary to-accent bg-clip-text text-transparent mb-6">
             Welcome to saari3
@@ -76,14 +98,14 @@ function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 text-center border border-primary/10 hover:shadow-2xl hover:scale-105 transition-all">
               <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <span className="text-white text-3xl">👨‍💻</span>
+                <i className="fas fa-user-tie text-white text-3xl"></i>
               </div>
               <h3 className="text-xl font-bold text-secondary mb-2">REDA ZAKARIA</h3>
               <p className="text-text">3rd year engineering student at Computer Science</p>
             </div>
             <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 text-center border border-primary/10 hover:shadow-2xl hover:scale-105 transition-all">
               <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <span className="text-white text-3xl">👨‍💻</span>
+                <i className="fas fa-user-tie text-white text-3xl"></i>
               </div>
               <h3 className="text-xl font-bold text-secondary mb-2">OMAR EL HORRE</h3>
               <p className="text-text">3rd year engineering student at Computer Science</p>
@@ -100,14 +122,14 @@ function Home() {
             <div className="flex flex-col md:flex-row justify-center items-center gap-6">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-white text-xl">🙏</span>
+                  <i className="fas fa-heart text-white text-xl"></i>
                 </div>
                 <span className="text-lg font-semibold text-secondary">HIBA EL BOUHADDIOUI</span>
               </div>
               <div className="hidden md:block text-text/30">•</div>
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-white text-xl">🙏</span>
+                  <i className="fas fa-heart text-white text-xl"></i>
                 </div>
                 <span className="text-lg font-semibold text-secondary">ABDELLAH RAISSOUNI</span>
               </div>
@@ -123,7 +145,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background relative">
+          {/* Global Particle Background */}
+          <ParticleBackground active={true} color="#4CAF50" />
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />
@@ -148,6 +172,14 @@ function App() {
             <Route
               path="/hospital/:hospitalId"
               element={<HospitalDetail />}
+            />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <AdminProtectedRoute>
+                  <AdminDashboard />
+                </AdminProtectedRoute>
+              }
             />
           </Routes>
         </div>

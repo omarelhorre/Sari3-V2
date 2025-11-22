@@ -15,7 +15,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center space-x-3 group">
             <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-              <span className="text-white text-2xl">🏥</span>
+              <i className="fas fa-hospital text-white text-2xl"></i>
             </div>
             <div>
               <span className="text-2xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
@@ -27,18 +27,29 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-1">
             {user && (
               <>
-                <Link 
-                  to="/dashboard" 
-                  className="px-4 py-2 text-text hover:text-primary hover:bg-primary/10 rounded-lg transition-all font-medium"
-                >
-                  Dashboard
-                </Link>
-                <Link 
-                  to="/map" 
-                  className="px-4 py-2 text-text hover:text-primary hover:bg-primary/10 rounded-lg transition-all font-medium"
-                >
-                  Locations
-                </Link>
+                {user.role === 'admin' || user.user_metadata?.role === 'admin' ? (
+                  <Link 
+                    to="/admin/dashboard" 
+                    className="px-4 py-2 text-text hover:text-primary hover:bg-primary/10 rounded-lg transition-all font-medium"
+                  >
+                    Admin Dashboard
+                  </Link>
+                ) : (
+                  <>
+                    <Link 
+                      to="/dashboard" 
+                      className="px-4 py-2 text-text hover:text-primary hover:bg-primary/10 rounded-lg transition-all font-medium"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link 
+                      to="/map" 
+                      className="px-4 py-2 text-text hover:text-primary hover:bg-primary/10 rounded-lg transition-all font-medium"
+                    >
+                      Locations
+                    </Link>
+                  </>
+                )}
               </>
             )}
           </nav>
@@ -49,7 +60,9 @@ export default function Header() {
                 <div className="hidden sm:flex items-center space-x-2 px-4 py-2 bg-primary/10 rounded-lg">
                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                   <span className="text-sm text-text font-medium">
-                    Logged in as {user.email?.split('@')[0]}
+                    {user.role === 'admin' || user.user_metadata?.role === 'admin' 
+                      ? `Admin - ${user.hospitalName || 'Hospital'}`
+                      : user.email?.split('@')[0]}
                   </span>
                 </div>
                 <button

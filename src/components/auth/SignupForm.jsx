@@ -44,7 +44,7 @@ export default function SignupForm() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-accent/10 px-4">
         <div className="max-w-md w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 text-center border border-primary/10 animate-fade-in">
           <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <span className="text-white text-4xl">✓</span>
+            <i className="fas fa-check-circle text-white text-4xl"></i>
           </div>
           <h2 className="text-3xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent mb-3">
             Account Created!
@@ -60,7 +60,7 @@ export default function SignupForm() {
       <div className="max-w-md w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-primary/10 animate-fade-in">
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <span className="text-white text-4xl">🏥</span>
+            <i className="fas fa-hospital text-white text-4xl"></i>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent mb-3">
             Create Account
