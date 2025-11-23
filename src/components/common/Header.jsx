@@ -84,18 +84,6 @@ export default function Header() {
           </Link>
 
           <nav className="flex items-center space-x-2">
-            {user && (
-              <>
-                {user.role === 'admin' || user.user_metadata?.role === 'admin' ? (
-                  <Link
-                    to="/admin/dashboard"
-                    className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl hover:shadow-xl hover:scale-105 active:scale-95 transition-all font-semibold backdrop-blur-sm border border-red-500/20"
-                  >
-                    Admin Dashboard
-                  </Link>
-                ) : null}
-              </>
-            )}
             <Link
               to="/"
               onClick={handleHomeClick}
@@ -127,10 +115,22 @@ export default function Header() {
             >
               Contact
             </button>
+            {user && (
+              <>
+                {user.role === 'admin' || user.user_metadata?.role === 'admin' ? (
+                  <Link
+                    to="/admin/dashboard"
+                    className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl hover:shadow-xl hover:scale-105 active:scale-95 transition-all font-semibold backdrop-blur-sm border border-red-500/20"
+                  >
+                    Admin Dashboard
+                  </Link>
+                ) : null}
+              </>
+            )}
             {user ? (
               <button
                 onClick={handleLogoutClick}
-                className="px-6 py-3 bg-gradient-to-r from-secondary to-primary text-white rounded-xl hover:shadow-xl hover:scale-105 active:scale-95 transition-all font-semibold backdrop-blur-sm border border-primary/20"
+                className="px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-xl hover:shadow-xl hover:scale-105 active:scale-95 transition-all font-semibold backdrop-blur-sm border border-gray-500/20"
               >
                 Logout
               </button>
