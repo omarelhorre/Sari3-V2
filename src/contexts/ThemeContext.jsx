@@ -5,23 +5,52 @@ const ThemeContext = createContext(null)
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
     // Get theme from localStorage or default to 'light'
-    const savedTheme = localStorage.getItem('theme')
-    return savedTheme || 'light'
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme')
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        return savedTheme
+      }
+    }
+    return 'light'
   })
 
   useEffect(() => {
-    // Apply theme to document
+    // Apply theme to document on mount and when theme changes
+    const root = document.documentElement
+    
+    // Remove both classes first to avoid conflicts
+    root.classList.remove('dark', 'light')
+    
+    // Add the current theme class
     if (theme === 'dark') {
-      document.documentElement.classList.add('dark')
+      root.classList.add('dark')
     } else {
-      document.documentElement.classList.remove('dark')
+      root.classList.remove('dark')
     }
+    
     // Save to localStorage
-    localStorage.setItem('theme', theme)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', theme)
+    }
   }, [theme])
 
+  // Apply theme immediately on mount (before React renders)
+  useEffect(() => {
+    const root = document.documentElement
+    const savedTheme = localStorage.getItem('theme')
+    if (savedTheme === 'dark') {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
+  }, [])
+
   const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light')
+    setTheme(prev => {
+      const newTheme = prev === 'light' ? 'dark' : 'light'
+      // Force a re-render by updating state
+      return newTheme
+    })
   }
 
   return (
